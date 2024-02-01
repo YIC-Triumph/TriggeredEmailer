@@ -1,0 +1,5 @@
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\bin\Release\net8.0\publish\TriggeredEmailer.exe
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\bin\Release\net8.0\publish\TriggeredEmailer.dll
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\bin\Release\net8.0\publish\TriggeredEmailer.deps.json
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\bin\Release\net8.0\publish\TriggeredEmailer.runtimeconfig.json
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\bin\Release\net8.0\publish\TriggeredEmailer.pdb
