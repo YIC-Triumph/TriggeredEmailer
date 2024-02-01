@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TriggeredEmailer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba62ede783e488ff3f65651626a42e54d250e829")]
 [assembly: System.Reflection.AssemblyProductAttribute("TriggeredEmailer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TriggeredEmailer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

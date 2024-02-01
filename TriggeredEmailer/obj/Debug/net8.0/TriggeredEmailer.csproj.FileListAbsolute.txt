@@ -91,6 +91,7 @@ C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEma
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.AssemblyInfoInputs.cache
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.AssemblyInfo.cs
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.csproj.CoreCompileInputs.cache
+C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.sourcelink.json
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.csproj.CopyComplete
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\TriggeredEmailer.dll
 C:\Project Files\TriggeredEmailer\TriggeredEmailer\obj\Debug\net8.0\refint\TriggeredEmailer.dll
