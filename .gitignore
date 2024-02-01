@@ -77,4 +77,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # Ignore appsettings.json to prevent sensitive information from being committed
-appsettings.*
+appsettings.json
