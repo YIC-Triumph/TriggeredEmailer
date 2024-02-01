@@ -46,6 +46,8 @@ Follow these steps to set up and run the project on your machine:
 
    Replace the placeholder values with your specific configurations.
 
-5. **Execute the project:**
+5. Clean and rebuild the project before executing it.
+
+6. **Execute the project:**
     Run the project using your preferred development environment or by executing the necessary commands.
 
