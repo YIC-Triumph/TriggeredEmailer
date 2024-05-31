@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Helpers;
+using TriggeredEmailer.Interfaces;
 using TriggeredEmailer.Services;
 
 class Program
@@ -11,6 +13,8 @@ class Program
     static async Task Main(string[] args)
     {
         var host = CreateHostBuilder(args).Build();
+        using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+        ILogger logger = factory.CreateLogger("Program");
 
         using (var scope = host.Services.CreateScope())
         {
@@ -18,16 +22,35 @@ class Program
 
             try
             {
-                var dbContext = services.GetRequiredService<ApplicationDbContext>();
-                var service = services.GetRequiredService<SessionService>();
+                var tasks = args.ToList();
+                foreach (var task in tasks)
+                {
+                    switch (task.ToLower())
+                    {
+                        case "mailsession":
+                            var service = services.GetRequiredService<SessionService>();
+                            await service.SendEmailToProviderForIncompleteSessionAsync();
+                            break;
+                        case "billing":
+                            var billingService = services.GetRequiredService<BillingService>();
 
-                await service.SendEmailToProviderForIncompleteSessionAsync();
+                            //for BT, run auto billing 48hrs(Monday)
+                            //for BCBA, run auto billing 72hrs(Tuesday)
+                            await billingService.ConfigureSendBilling();
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                logger.LogError(ex.Message, ex);
             }
         }
+
+        Console.ReadLine();
     }
 
     static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -47,7 +70,10 @@ class Program
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             services.AddScoped<SessionService>();
+            services.AddScoped<BillingService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IVWSessionsService, VWSessionsService>();
+            services.AddScoped<IVWStaffService, VWStaffService>();
         });
 
 }

@@ -1,19 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Data;
+using System.Text;
+using TriggeredEmailer.Constants;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Helpers;
+using TriggeredEmailer.Interfaces;
+using TriggeredEmailer.Models;
 
 namespace TriggeredEmailer.Services
 {
     internal class SessionService
     {
         private readonly ApplicationDbContext _dbContext;
-
         private readonly IEmailService _emailService;
-
         private readonly AppSettings _appSettings;
 
-        public SessionService(IOptions<AppSettings> appSettings, ApplicationDbContext dbContext, IEmailService emailService)
+        public SessionService(
+            IOptions<AppSettings> appSettings, 
+            ApplicationDbContext dbContext, 
+            IEmailService emailService)
         {
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
