@@ -99,7 +99,6 @@ namespace TriggeredEmailer.Services
                     {
                         token.ThrowIfCancellationRequested();
 
-                        Console.WriteLine("start :" + sess.Key + ": " + sess.Value);
                         var role = providers.Where(p => p.LoginID == sess.Key).FirstOrDefault();
                         var pIds = string.Join(',', sess.Value.Select(t => t.sessID));
 
