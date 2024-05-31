@@ -148,10 +148,12 @@ namespace TriggeredEmailer.Services
             {
                 //log in console
                 _logger.LogError(ex.Message, ex);
+                //TODO: Log to database;
             }
             if (sb.Length > 0)
             {
-                //TODO: Log failed notifications
+                //TODO: Log to database;
+                _logger.LogInformation(sb.ToString());
             }
         }
     }
