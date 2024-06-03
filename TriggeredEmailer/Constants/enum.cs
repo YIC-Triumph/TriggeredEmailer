@@ -50,4 +50,10 @@ namespace TriggeredEmailer.Constants
         UnderReview = 10,
         ConfirmedAbsent = 11
     }
+
+    public enum LogType
+    {
+        Console,
+        File
+    }
 }

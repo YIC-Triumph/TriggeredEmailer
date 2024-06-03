@@ -1,12 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TriggeredEmailer.Constants;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Interfaces;
@@ -19,12 +13,12 @@ namespace TriggeredEmailer.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly IVWSessionsService _vwSessionsService;
         private readonly IVWStaffService _vwStaffService;
-        private readonly ILogger<BillingService> _logger;
+        private readonly IFileLogger<BillingService> _logger;
         public BillingService(
             ApplicationDbContext dbContext,
             IVWSessionsService vWSessionsService,
             IVWStaffService vwStaffService,
-            ILogger<BillingService> logger
+            IFileLogger<BillingService> logger
             )
         {
             _dbContext = dbContext;
@@ -37,7 +31,7 @@ namespace TriggeredEmailer.Services
         private const uint _daysInterval = (60 * 24 * 6);
 
         //reset day on Sunday
-        private DateTime _sunday = DateTime.UtcNow.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
+        private DateTime _sunday = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek);
 
         /// <summary>
         /// invoke auto billing
@@ -84,8 +78,9 @@ namespace TriggeredEmailer.Services
         /// <returns></returns>
         private async Task ExecuteParallelBilling(List<KeyValuePair<int, List<vwSession>>> validSessions)
         {
+            var logLevel = LogLevel.Information;
+            var args = new Exception();
             StringBuilder sb = new StringBuilder();
-
             CancellationTokenSource cts = new CancellationTokenSource();
             var token = cts.Token;
 
@@ -145,15 +140,13 @@ namespace TriggeredEmailer.Services
             }
             catch (Exception ex)
             {
-                //log in console
-                _logger.LogError(ex.Message, ex);
-                //TODO: Log to database;
+                logLevel = LogLevel.Error;
+                sb.AppendLine(ex.Message);
+                args = ex;
             }
-            if (sb.Length > 0)
-            {
-                //TODO: Log to database;
-                _logger.LogInformation(sb.ToString());
-            }
+
+            //log to file
+            await _logger.WriteLog(sb.ToString(), LogType.File, logLevel, args);
         }
     }
 }

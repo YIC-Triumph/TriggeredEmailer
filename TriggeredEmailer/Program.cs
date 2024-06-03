@@ -69,6 +69,7 @@ class Program
             // Add DbContext with the retrieved connection string
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddScoped(typeof(IFileLogger<>), typeof(FileLoggerService<>));
             services.AddScoped<SessionService>();
             services.AddScoped<BillingService>();
             services.AddScoped<IEmailService, EmailService>();
