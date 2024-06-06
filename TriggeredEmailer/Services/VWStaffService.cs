@@ -28,12 +28,12 @@ namespace TriggeredEmailer.Services
             //TODO: 2. Change the query to this
             //var providers = _dbContext.Staffs.ToList();
 
-            var providers = _dbContext.Staffs.FromSqlRaw(
+            var providers = await _dbContext.Staffs.FromSqlRaw(
                 @"SELECT LoginID,
                          R_ID,
                          FirstName,
                          LastName
-                    FROM vwStaff").ToList();
+                    FROM vwStaff").ToListAsync();
 
             return providers;
         }

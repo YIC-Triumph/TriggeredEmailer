@@ -34,7 +34,7 @@ namespace TriggeredEmailer.Services
             pSundayDate.Value = fromDate.Date;
             pSaturdayDate.Value = toDate.Date;
 
-            var vwSessions = _dbContext.vwSessions.FromSqlRaw(
+            var vwSessions = await _dbContext.vwSessions.FromSqlRaw(
                     @"SELECT sessID, 
                         TherapistID, 
                         sessdate, 
@@ -49,7 +49,7 @@ namespace TriggeredEmailer.Services
                     [pSundayDate, pSaturdayDate])
                 .OrderByDescending(d => d.sessdate)
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
 
             return vwSessions;
         }

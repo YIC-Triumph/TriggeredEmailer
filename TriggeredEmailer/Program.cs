@@ -25,6 +25,7 @@ class Program
                 var tasks = args.ToList();
                 foreach (var task in tasks)
                 {
+                    logger.LogInformation($"{task} scheduler is running...");
                     switch (task.ToLower())
                     {
                         case "mailsession":
@@ -47,10 +48,10 @@ class Program
             catch (Exception ex)
             {
                 logger.LogError(ex.Message, ex);
+                Console.ReadLine();
             }
         }
 
-        Console.ReadLine();
     }
 
     static IHostBuilder CreateHostBuilder(string[] args) =>

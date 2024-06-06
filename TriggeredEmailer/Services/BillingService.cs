@@ -68,75 +68,63 @@ namespace TriggeredEmailer.Services
 
             if (!validSessions.Any()) return;
 
-            await ExecuteParallelBilling(validSessions);
+            await ExecuteBilling(validSessions);
         }
 
         /// <summary>
-        /// This method executes parallel tasks for billing to improve performance
+        /// This method executes billing
         /// </summary>
         /// <param name="validSessions"></param>
         /// <returns></returns>
-        private async Task ExecuteParallelBilling(List<KeyValuePair<int, List<vwSession>>> validSessions)
+        private async Task ExecuteBilling(List<KeyValuePair<int, List<vwSession>>> validSessions)
         {
             var logLevel = LogLevel.Information;
             var args = new Exception();
             StringBuilder sb = new StringBuilder();
-            CancellationTokenSource cts = new CancellationTokenSource();
-            var token = cts.Token;
 
             var providers = await _vwStaffService.GetAll();
 
             try
             {
-                await Task.Run(async () =>
+                foreach (var sess in validSessions)
                 {
-                    await Parallel.ForEachAsync(validSessions, async (sess, token) =>
+                    var role = providers.Where(p => p.LoginID == sess.Key).FirstOrDefault();
+                    var pIds = string.Join(',', sess.Value.Select(t => t.sessID));
+
+                    //if ROLE is BCBA, validate if any of the sessions are supervision sessions that theres a bt session being supervised
+                    if (role?.R_ID == (int)Roles.BCBA)
                     {
-                        token.ThrowIfCancellationRequested();
+                        var status = await _dbContext.Database.SqlQuery<string>($"exec sp_CheckIfSupervisedSessionEntered @sessIDs={pIds}").ToListAsync();
 
-                        var role = providers.Where(p => p.LoginID == sess.Key).FirstOrDefault();
-                        var pIds = string.Join(',', sess.Value.Select(t => t.sessID));
-
-                        //if ROLE is BCBA, validate if any of the sessions are supervision sessions that theres a bt session being supervised
-                        if (role?.R_ID == (int)Roles.BCBA)
+                        var sessionStat = status.FirstOrDefault();
+                        if (status.Count > 0)
                         {
-                            var status = _dbContext.Database.SqlQuery<string>($"exec sp_CheckIfSupervisedSessionEntered @sessIDs={pIds}");
-
-                            var sessionStat = await status.ToListAsync();
-                            if (sessionStat.Count > 0)
+                            switch (sessionStat)
                             {
-                                switch (sessionStat.FirstOrDefault())
-                                {
-                                    case "no session":
-                                        //Missing-Supervised
-                                        sb.AppendLine($"{role.LastName} {role.FirstName} cannot submit to billing because BT did not sign his/her session({pIds}) that he/she supervised.");
-                                        break;
-                                    case "not submitted":
-                                        //HOLD
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                case "no session":
+                                    //Missing-Supervised
+                                    sb.AppendLine($"{role.LastName} {role.FirstName} cannot submit to billing because BT did not sign his/her session({pIds}) that he/she supervised.");
+                                    break;
+                                case "not submitted":
+                                    //HOLD
+                                    break;
+                                default:
+                                    break;
                             }
                         }
-                        //if ROLE is BT, if any of these sessions were supervised and put on hold we need to update then now that we are billing
-                        else if (role?.R_ID == (int)Roles.BT)
-                        {
-                            _dbContext.Database.ExecuteSql($"exec sp_CheckIfSessSupervisedOnHold @sessIDs={pIds}");
-                        }
+                    }
+                    //if ROLE is BT, if any of these sessions were supervised and put on hold we need to update then now that we are billing
+                    else if (role?.R_ID == (int)Roles.BT)
+                        await _dbContext.Database.ExecuteSqlAsync($"exec sp_CheckIfSessSupervisedOnHold @sessIDs={pIds}");
 
-                        //need to split by student
-                        //calculate total hours and pay and then insert into the table  
-                        var dsSesStu = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}");
+                    //need to split by student
+                    //calculate total hours and pay and then insert into the table
+                    var dsSesStu = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}");
 
-                        //store billing to invoice
-                        foreach (var item in dsSesStu)
-                        {
-                            _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={30}");
-                        }
-                    });
-
-                });
+                    //store billing to invoice
+                    foreach (var item in dsSesStu)
+                        _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={30}");
+                }
             }
             catch (Exception ex)
             {

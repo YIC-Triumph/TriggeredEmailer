@@ -24,12 +24,12 @@ namespace TriggeredEmailer.Data
         public DbSet<vwSession> vwSessions { get; set; }
         public DbSet<Staff> Staffs { get; set; }
 
-        /// <summary>
-        /// Not mapped table
-        /// </summary>
+        #region not mapped tables
         [NotMapped]
         public DbSet<BillingAmount> BillingAmounts { get; set; }
+
         [NotMapped]
         public DbSet<SessionStudent> SessionStudents { get; set; }
+        #endregion
     }
 }
