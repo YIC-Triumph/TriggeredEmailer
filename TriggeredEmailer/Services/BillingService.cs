@@ -39,6 +39,8 @@ namespace TriggeredEmailer.Services
         /// <returns></returns>
         public async Task ConfigureSendBilling()
         {
+            var sb = new StringBuilder();
+
             //1 get starting date of billing last Week
             var lastSunday = _sunday.AddDays(-7);
             var saturdayDate = lastSunday.AddMinutes(_daysInterval);
@@ -47,7 +49,7 @@ namespace TriggeredEmailer.Services
             var vwSessions = await _vwSessionsService.GetAll(lastSunday, saturdayDate);
 
             //3 list of valid session per therapist
-            var validSessions = new List<KeyValuePair<int, List<vwSession>>>();
+            var validSessions = new Dictionary<int, List<vwSession>>();
 
             var gsessionPerProviderGrp = vwSessions.GroupBy(t => t.TherapistID);
 
@@ -56,17 +58,27 @@ namespace TriggeredEmailer.Services
                 var hasIncompleteSession = sessions.Any(session =>
                 {
                     SessionStatus sessionStatus;
-                    if (Enum.TryParse<SessionStatus>(session.SessionStatus.ToString(), out sessionStatus))
-                        if (sessionStatus != SessionStatus.Absent && sessionStatus != SessionStatus.Completed) return true;
+                    if (Enum.TryParse(session.SessionStatus.ToString(), out sessionStatus))
+                        if (sessionStatus < SessionStatus.Absent)
+                        {
+                            sb.AppendLine($"Session {session.SessID} is {sessionStatus.ToString()}");
+                            sb.AppendLine($"\tTherapist ID: {session.TherapistID}");
+                            sb.AppendLine($"\tStudent ID: {session.StudentID}");
+                            return true;
+                        }
 
                     return false;
                 });
 
                 if (!hasIncompleteSession)
-                    validSessions.Add(new KeyValuePair<int, List<vwSession>>((int)sessions.Key, sessions.ToList()));
+                    validSessions.Add((int)sessions.Key, sessions.ToList());
             }
 
-            if (!validSessions.Any()) return;
+            if (!validSessions.Any())
+            {
+                await _logger.WriteLog(sb.ToString(), LogType.File, LogLevel.Information);
+                return;
+            }
 
             await ExecuteBilling(validSessions);
         }
@@ -76,7 +88,7 @@ namespace TriggeredEmailer.Services
         /// </summary>
         /// <param name="validSessions"></param>
         /// <returns></returns>
-        private async Task ExecuteBilling(List<KeyValuePair<int, List<vwSession>>> validSessions)
+        private async Task ExecuteBilling(Dictionary<int, List<vwSession>> validSessions)
         {
             var logLevel = LogLevel.Information;
             var args = new Exception();
@@ -89,7 +101,7 @@ namespace TriggeredEmailer.Services
                 foreach (var sess in validSessions)
                 {
                     var role = providers.Where(p => p.LoginID == sess.Key).FirstOrDefault();
-                    var pIds = string.Join(',', sess.Value.Select(t => t.sessID));
+                    var pIds = string.Join(',', sess.Value.Select(t => t.SessID));
 
                     //if ROLE is BCBA, validate if any of the sessions are supervision sessions that theres a bt session being supervised
                     if (role?.R_ID == (int)Roles.BCBA)
@@ -123,7 +135,7 @@ namespace TriggeredEmailer.Services
 
                     //store billing to invoice
                     foreach (var item in dsSesStu)
-                        _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={30}");
+                        _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={sess.Value.Select(p => p.PP_ID)}");
                 }
             }
             catch (Exception ex)

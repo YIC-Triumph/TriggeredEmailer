@@ -15,12 +15,13 @@ namespace TriggeredEmailer.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int sessID { get; set; }
+        public int SessID { get; set; }
         public int? TherapistID { get; set; }
-        public DateTime? sessdate { get; set; }
+        public DateTime? Sessdate { get; set; }
         public DateTime? AffirmedDate { get; set; }
         public int? SessionStatus { get; set; }
-        public int? studentID { get; set; }
+        public int? StudentID { get; set; }
         public string? FullName { get; set; }
+        public int PP_ID { get; set; }
     }
 }

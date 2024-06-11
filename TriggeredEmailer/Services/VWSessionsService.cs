@@ -37,17 +37,21 @@ namespace TriggeredEmailer.Services
             var vwSessions = await _dbContext.vwSessions.FromSqlRaw(
                     @"SELECT sessID, 
                         TherapistID, 
-                        sessdate, 
+                        SessDate, 
                         AffirmedDate, 
                         SessionStatus, 
                         studentID, 
                         FullName
-                    FROM vwSessions 
+                        FullName,
+                        PP_ID
+                    FROM vwSessions
+                    LEFT JOIN tblPayPeriod 
+                        ON SessDate between PP_StartDate and PP_EndDate    
                     WHERE   
-                        sessdate >= CAST(@StartDate AS Datetime) AND
-                        sessdate <= CAST(@EndDate AS datetime)",
+                        SessDate >= CAST(@StartDate AS Datetime) AND
+                        SessDate <= CAST(@EndDate AS datetime)",
                     [pSundayDate, pSaturdayDate])
-                .OrderByDescending(d => d.sessdate)
+                .OrderByDescending(d => d.Sessdate)
                 .AsNoTracking()
                 .ToListAsync();
 
