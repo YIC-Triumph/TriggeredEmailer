@@ -138,7 +138,7 @@ namespace TriggeredEmailer.Services
                         _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={sess.Value.Select(p => p.PP_ID)}");
 
 
-                    sb.Append($"Successfull billing for provider {sess.Key}, with sessions {pIds}");
+                    sb.AppendLine($"Successfull billing for provider {sess.Key}, with sessions {pIds}");
                     await _logger.WriteLog(sb.ToString(), LogType.File, logLevel);
                 }
             }
