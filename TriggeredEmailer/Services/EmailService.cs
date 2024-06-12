@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using TriggeredEmailer.Helpers;
@@ -7,17 +8,17 @@ namespace TriggeredEmailer.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly AppSettings _appSettings;
+        private readonly IConfiguration _config;
 
-        public EmailService(IOptions<AppSettings> appSettings)
+        public EmailService(IConfiguration config)
         {
-            _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
+            _config = config;
         }
 
         public async Task SendEmail(string toEmail, string subject, string message)
         {
-            var client = new SendGridClient(_appSettings.SendGridApiKey);
-            var from = new EmailAddress(_appSettings.EmailFrom, "Incomplete Session Alert");
+            var client = new SendGridClient(_config["SendGridApiKey"]);
+            var from = new EmailAddress(_config["EmailFrom"], "Incomplete Session Alert");
             var to = new EmailAddress(toEmail);
             var plainTextContent = message;
             var htmlContent = message;

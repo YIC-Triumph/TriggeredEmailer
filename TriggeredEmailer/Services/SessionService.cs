@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Data;
 using System.Text;
@@ -15,14 +16,14 @@ namespace TriggeredEmailer.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IEmailService _emailService;
-        private readonly AppSettings _appSettings;
+        private readonly IConfiguration _config;
 
         public SessionService(
-            IOptions<AppSettings> appSettings, 
+            IConfiguration config, 
             ApplicationDbContext dbContext, 
             IEmailService emailService)
         {
-            _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
+            _config = config;
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _emailService = emailService;
         }
@@ -37,7 +38,7 @@ namespace TriggeredEmailer.Services
 
             foreach (var session in incompleteScheduledSessionResult)
             {
-                var message = $"Dear {session.UserName},\n\nYou have an incomplete session scheduled for this session id: {session.sessID}.\n\nKindly edit the incomplete scheduled session through this link: {_appSettings.Domain}SessionEdit.aspx?SS_ID={session.sessID}&ShowAll=False&QuickAdd=False&returnTo=caseload-clientlist&Staff_ID={session.TherapistID}&AllAssmts= \n\nThank you,\n\nTriumph";
+                var message = $"Dear {session.UserName},\n\nYou have an incomplete session scheduled for this session id: {session.sessID}.\n\nKindly edit the incomplete scheduled session through this link: {_config["Domain"]}SessionEdit.aspx?SS_ID={session.sessID}&ShowAll=False&QuickAdd=False&returnTo=caseload-clientlist&Staff_ID={session.TherapistID}&AllAssmts= \n\nThank you,\n\nTriumph";
 
                 await _emailService.SendEmail(session.EmailAddress, "Incomplete Session", message);
             }

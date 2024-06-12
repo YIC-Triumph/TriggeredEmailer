@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EllipticCurve.Utils;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Configuration;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Helpers;
 using TriggeredEmailer.Interfaces;
@@ -58,16 +60,18 @@ class Program
     Host.CreateDefaultBuilder(args)
         .ConfigureAppConfiguration((hostingContext, config) =>
         {
-            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var environment = Environment.GetEnvironmentVariable("DOTNET_CORE");
+            config.AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true);
         })
         .ConfigureServices((_, services) =>
         {
-            // Retrieve the connection string from configuration
-            var connectionString = _.Configuration.GetConnectionString("DBConnectionString");
+            IConfigurationRoot config = new ConfigurationBuilder()
+           .AddUserSecrets<Program>()
+           .Build();
+
+            string connectionString = config["ConnectionString"];
 
             services.Configure<AppSettings>(_.Configuration.GetSection("AppSettings"));
-
-            // Add DbContext with the retrieved connection string
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             services.AddScoped(typeof(IFileLogger<>), typeof(FileLoggerService<>));
@@ -76,6 +80,14 @@ class Program
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IVWSessionsService, VWSessionsService>();
             services.AddScoped<IVWStaffService, VWStaffService>();
+
+            services.AddSingleton<IConfiguration>(sp =>
+            {
+                IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+
+                configurationBuilder.AddConfiguration(config);
+                return configurationBuilder.Build();
+            });
         });
 
 }
