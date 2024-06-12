@@ -66,7 +66,7 @@ jobs:
         - name: Display environment variables
           run: |
             echo "connections string is ${{ secrets.CONNECTIONSTRING }} "
-            echo "sendgrid api is ${{ secretts.SENDGRIDAPIKEY }}"
+            echo "sendgrid api is ${{ secrets.SENDGRIDAPIKEY }}"
     #   uses: actions/checkout@v4
     #   with:
     #     fetch-depth: 0
