@@ -15,6 +15,7 @@
 # Replace the variables relative to your project in the "env" section below.
 #
 # 2. Signing
+#https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide
 # Generate a signing certificate in the Windows Application
 # Packaging Project or add an existing signing certificate to the project.
 # Next, use PowerShell to encode the .pfx file using Base64 encoding
@@ -55,7 +56,7 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug]
+        configuration: [Release]
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
