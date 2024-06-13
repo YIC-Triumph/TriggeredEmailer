@@ -57,8 +57,8 @@ jobs:
     environment: development
 
     env:
-        connection_string: ${{ secrets[CONNECTIONSTRING] }}
-        sendgrid_apikey: ${{ secrets[SENDGRIDAPIKEY] }}
+        connection_string: ${{ secrets.CONNECTIONSTRING }}
+        sendgrid_apikey: ${{ secrets.SENDGRIDAPIKEY }}
         GITHUB_CONTEXT: ${{ toJson(github) }}
     #   Solution_Name: your-solution-name                         # Replace with your solution name, i.e. MyWpfApp.sln.
     #   Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
@@ -71,6 +71,8 @@ jobs:
             echo "connections string is '$connection_string'"
             echo "sendgrid api is '$sendgrid_apikey'"
             echo "context is '$GITHUB_CONTEXT'"
+            echo "$sendgrid_apikey" | base64
+            shell: bash
     #   uses: actions/checkout@v4
     #   with:
     #     fetch-depth: 0
