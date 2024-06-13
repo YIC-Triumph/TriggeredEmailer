@@ -72,7 +72,6 @@ jobs:
             echo "sendgrid api is '$sendgrid_apikey'"
             echo "context is '$GITHUB_CONTEXT'"
             echo "$sendgrid_apikey" | base64
-            shell: bash
     #   uses: actions/checkout@v4
     #   with:
     #     fetch-depth: 0
