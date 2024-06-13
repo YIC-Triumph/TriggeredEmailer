@@ -44,6 +44,11 @@ on:
   pull_request:
     branches: [ "develop" ]
 
+env:
+    environment: ${{ vars.DOTNET_CORE }}
+    connection_string: ${{ secrets.CONNECTIONSTRING }}
+    sendgrid_apikey: ${{ secrets.SENDGRIDAPIKEY }}
+
 jobs:
 
   build:
@@ -54,13 +59,8 @@ jobs:
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-    environment: development
 
-    env:
-        connection_string: ${{ secrets.CONNECTIONSTRING }}
-        sendgrid_apikey: ${{ secrets.SENDGRIDAPIKEY }}
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-        environment: ${{ vars.DOTNET_CORE }}
+    # env:
     #   Solution_Name: your-solution-name                         # Replace with your solution name, i.e. MyWpfApp.sln.
     #   Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
     #   Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
@@ -71,7 +71,6 @@ jobs:
           run: |
             echo "connections string is $connection_string"
             echo "sendgrid api is $sendgrid_apikey"
-            echo "context is $GITHUB_CONTEXT"
             echo "environment $environment"
     #   uses: actions/checkout@v4
     #   with:
