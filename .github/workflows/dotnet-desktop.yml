@@ -69,10 +69,10 @@ jobs:
     steps:
         - name: Display environment variables
           run: |
-            echo "connections string is '$connection_string'"
-            echo "sendgrid api is '$sendgrid_apikey'"
-            echo "context is '$GITHUB_CONTEXT'"
-            echo "environment '$environment'"
+            echo "connections string is $connection_string"
+            echo "sendgrid api is $sendgrid_apikey"
+            echo "context is $GITHUB_CONTEXT"
+            echo "environment $environment"
     #   uses: actions/checkout@v4
     #   with:
     #     fetch-depth: 0
