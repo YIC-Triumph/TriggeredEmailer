@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using TriggeredEmailer.Constants;
 using TriggeredEmailer.Helpers;
+using TriggeredEmailer.Interfaces;
 
 namespace TriggeredEmailer.Services
 {
@@ -9,9 +12,12 @@ namespace TriggeredEmailer.Services
     {
         private readonly AppSettings _appSettings;
 
-        public EmailService(IOptions<AppSettings> appSettings)
+        private readonly IFileLogger<EmailService> _logger;
+
+        public EmailService(IOptions<AppSettings> appSettings, IFileLogger<EmailService> logger)
         {
             _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
+            _logger = logger?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task SendEmail(string toEmail, string subject, string message)
@@ -22,15 +28,17 @@ namespace TriggeredEmailer.Services
             var plainTextContent = message;
             var htmlContent = message;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var args = new Exception();
 
             try
             {
                 var response = await client.SendEmailAsync(msg);
-                Console.WriteLine($"Email sent successfully. Status code: {response.StatusCode}");
+
+                await _logger.WriteLog($"Email sent successfully to {toEmail}. Status code: {response.StatusCode}", LogType.File, LogLevel.Information, args);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                await _logger.WriteLog($"Error sending email to {toEmail}. Error: {ex.Message}", LogType.File, LogLevel.Error, args);
             }
         }
     }
