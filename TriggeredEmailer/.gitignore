@@ -367,6 +367,3 @@ MigrationBackup/
 
 # Jetbrains
 .idea/
-
-# Ignore appsettings.json to prevent sensitive information from being committed
-appsettings.json
