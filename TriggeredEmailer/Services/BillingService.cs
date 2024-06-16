@@ -36,8 +36,9 @@ namespace TriggeredEmailer.Services
         /// <summary>
         /// invoke auto billing
         /// </summary>
+        /// <param name="role"></param>
         /// <returns></returns>
-        public async Task ConfigureSendBilling()
+        public async Task ConfigureSendBilling(Roles role)
         {
             var sb = new StringBuilder();
 
@@ -46,7 +47,7 @@ namespace TriggeredEmailer.Services
             var saturdayDate = lastSunday.AddMinutes(_daysInterval);
 
             //2 get all sessions from vwsession
-            var vwSessions = await _vwSessionsService.GetAll(lastSunday, saturdayDate);
+            var vwSessions = await _vwSessionsService.GetAll(lastSunday, saturdayDate, role);
 
             //3 list of valid session per therapist
             var validSessions = new Dictionary<int, List<vwSession>>();

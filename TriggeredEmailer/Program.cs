@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TriggeredEmailer.Constants;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Helpers;
 using TriggeredEmailer.Interfaces;
@@ -26,18 +27,22 @@ class Program
                 foreach (var task in tasks)
                 {
                     logger.LogInformation($"{task} scheduler is running...");
-                    switch (task.ToLower())
+                    switch (task)
                     {
                         case "mailsession":
                             var service = services.GetRequiredService<SessionService>();
                             await service.SendEmailToProviderForIncompleteSessionAsync();
                             break;
-                        case "billing":
+                        case "billing_BT":
+                        case "billing_BCBA":
                             var billingService = services.GetRequiredService<BillingService>();
 
                             //for BT, run auto billing 48hrs(Monday)
                             //for BCBA, run auto billing 72hrs(Tuesday)
-                            await billingService.ConfigureSendBilling();
+                            Roles role = Roles.BT;
+                            if (!string.Equals(task, "billing_BT")) role = Roles.BCBA;
+                            
+                            await billingService.ConfigureSendBilling(role);
                             break;
                         default:
                             break;
@@ -58,14 +63,20 @@ class Program
     Host.CreateDefaultBuilder(args)
         .ConfigureAppConfiguration((hostingContext, config) =>
         {
-            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+#if DEBUG
+            var environment = Environment.GetEnvironmentVariable("DOTNET_CORE");
+            config.AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true);
+            config.SetBasePath(AppContext.BaseDirectory);
+#endif
+
         })
         .ConfigureServices((_, services) =>
         {
             // Retrieve the connection string from configuration
-            var connectionString = _.Configuration.GetConnectionString("DBConnectionString");
-
-            services.Configure<AppSettings>(_.Configuration.GetSection("AppSettings"));
+            var appsettings = _.Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appsettings);
+            var connectionString = _.Configuration.GetConnectionString("DefaultConnection");
 
             // Add DbContext with the retrieved connection string
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
