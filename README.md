@@ -28,26 +28,16 @@ Follow these steps to set up and run the project on your machine:
 3. **Open the solution file:**
    Open the `.sln` file using either Visual Studio or Visual Studio Code.
 
-4. **Create `appsettings.json`:**
-   Create an `appsettings.json` file in the `./TriggeredEmailer` project directory to set up environment variables. Use the following template:
-
-    ```json
-    {
-        "ConnectionStrings": {
-            "DBConnectionString": ""
-        },
-        "AppSettings": {
-            "EmailFrom": "",
-            "SendGridApiKey": "",
-            "Domain": "http://localhost:50629/"
-        }
-    }
-    ```
-
-   Replace the placeholder values with your specific configurations.
+4. **Populate environment variable values in appsettings.json**:
+Refer to my local appsettings.json setup for guidance: [My appsettings.json setup locally.](https://github.com/YIC-Triumph/TriggeredEmailer/wiki/My-appsettings.json-setup-locally)
 
 5. Clean and rebuild the project before executing it.
 
-6. **Execute the project:**
-    Run the project using your preferred development environment or by executing the necessary commands.
+6. **To run this console app**, you need to provide an argument. Use either "mailsession" or "billing" as the argument.
+
+7. **Run the console app using Visual Studio**:
+Follow these steps as shown in the screenshots:
+![image](https://github.com/YIC-Triumph/TriggeredEmailer/assets/21212665/f9ef9ae3-c7d5-4c27-b48d-d2735e160217)
+![image](https://github.com/YIC-Triumph/TriggeredEmailer/assets/21212665/91b1c544-24a4-4826-b587-7b464a415004)
+![image](https://github.com/YIC-Triumph/TriggeredEmailer/assets/21212665/e93c6086-248c-4c04-9b59-50b81f479f80)
 
