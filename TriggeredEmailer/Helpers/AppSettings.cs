@@ -19,6 +19,8 @@ namespace TriggeredEmailer.Helpers
     public class FileLogger
     {
         public LogProperties Billing { get; set; } = new LogProperties();
+
+        public LogProperties Mailsession { get; set; } = new LogProperties();
     }
 
     public class LogProperties
