@@ -45,11 +45,13 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: published_app
-          path: ./TriggeredEmailer/publish/
+          path: ./publish
        # Print contents of publish directory before uploading artifact
       - name: List contents of publish directory
         run: |
+          ls ./publish
           ls ./
+
       - name: Copy file via scp password
         uses: appleboy/scp-action@master
         with:
@@ -57,7 +59,7 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           port: 22
-          source: "./TriggeredEmailer/publish/*"
+          source: "./publish/*" 
           target: "C:/inetpub/wwwroot/artifact"
           strip_components: 2
 
