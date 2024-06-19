@@ -35,17 +35,17 @@ jobs:
         with:
           name: published_app
           path: ./publish
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
       # Print contents of publish directory before uploading artifact
       - name: List contents of publish directory
         run: |
           ls ./publish
           ls ./
-  
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
       - name: Copy file via scp password
         uses: appleboy/scp-action@master
         with:
