@@ -1,0 +1,37 @@
+name: TriggeredEmailer CI/CD
+
+on:
+  push:
+    branches:
+      - devops/setup-ci-cd-pipeline
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: published_app
+          path: ./publish
