@@ -47,6 +47,17 @@ jobs:
           name: published_app
           path: ./artifact
 
+      - name: Copy file via scp password
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          port: 22
+          source: "./artifact/*" 
+          target: "C:/inetpub/wwwroot/artifact"
+          strip_components: 2
+
       - name: SSH into VM and deploy
         uses: appleboy/ssh-action@master
         with:
