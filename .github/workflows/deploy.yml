@@ -54,4 +54,6 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           port: 22
-          script: powershell -File "C:\inetpub\wwwroot\test_ps.ps1"
+          script: |
+            Move-Item -Path "./artifact/*" -Destination "C:\inetpub\wwwroot\artifact"
+            powershell -File "C:\inetpub\wwwroot\triggered_emailer_deployment_script.ps1"
