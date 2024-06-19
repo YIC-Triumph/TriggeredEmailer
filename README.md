@@ -33,7 +33,7 @@ Refer to my local appsettings.json setup for guidance: [My appsettings.json setu
 
 5. Clean and rebuild the project before executing it.
 
-6. **To run this console app**, you need to provide an argument. Use either "mailsession" or "billing" as the argument.
+6. **To run this console app**, you need to provide an argument. Use either "mailsession" or "billing_BT" or "billing_BCBA" as the argument.
 
 7. **Run the console app using Visual Studio**:
 Follow these steps as shown in the screenshots:
