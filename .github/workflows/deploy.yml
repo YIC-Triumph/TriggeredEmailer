@@ -35,3 +35,25 @@ jobs:
         with:
           name: published_app
           path: ./publish
+  
+  deploy:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: published_app
+          path: ./artifact
+
+      - name: SSH into VM and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          port: 22
+          script: |
+            Move-Item -Path "./artifact/*" -Destination "C:\inetpub\wwwroot\artifact"
+            powershell -File "C:\inetpub\wwwroot\triggered_emailer_deployment_script.ps1"
