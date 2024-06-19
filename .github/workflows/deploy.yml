@@ -41,10 +41,16 @@ jobs:
     needs: build
 
     steps:
-      # Print contents of publish directory before uploading artifact
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: published_app
+          path: ./publish
+       # Print contents of publish directory before uploading artifact
       - name: List contents of publish directory
         run: |
-          ls \d\a\TriggeredEmailer\TriggeredEmailer\publish
+          ls ./publish
+          ls ./
       - name: Copy file via scp password
         uses: appleboy/scp-action@master
         with:
