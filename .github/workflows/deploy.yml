@@ -49,7 +49,7 @@ jobs:
        # Print contents of publish directory before uploading artifact
       - name: List contents of publish directory
         run: |
-          ls ./
+          ls /home/runner/work/TriggeredEmailer/TriggeredEmailer
       - name: Copy file via scp password
         uses: appleboy/scp-action@master
         with:
@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           port: 22
-          source: ./
+          source: "/home/runner/work/TriggeredEmailer/TriggeredEmailer/*" 
           target: "C:/inetpub/wwwroot/artifact"
           strip_components: 2
 
