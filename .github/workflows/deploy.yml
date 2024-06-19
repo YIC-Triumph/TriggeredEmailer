@@ -35,6 +35,11 @@ jobs:
         with:
           name: published_app
           path: ./publish
+      # Print contents of publish directory before uploading artifact
+      - name: List contents of publish directory
+        run: |
+          ls ./publish
+          ls ./
   
   deploy:
     runs-on: ubuntu-latest
