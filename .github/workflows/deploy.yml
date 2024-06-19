@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           port: 22
-          source: "./publish/*" 
+          source: "./*" 
           target: "C:/inetpub/wwwroot/artifact"
           strip_components: 2
 
