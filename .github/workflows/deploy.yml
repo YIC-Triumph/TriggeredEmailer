@@ -3,7 +3,7 @@ name: TriggeredEmailer CI/CD
 on:
   push:
     branches:
-      - devops/setup-ci-cd-pipeline
+      - main
 
 jobs:
   build:
