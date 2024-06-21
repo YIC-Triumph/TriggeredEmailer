@@ -10,8 +10,6 @@ TriggeredEmailer is a console application designed to be executed by a cron job,
 
 This repository is designed to be extensible for other task scheduling purposes related to the Triumph Web App.
 
-**Note:** This project requires .NET 8 or a higher version.
-
 ### Prerequisites
 
 - .NET8 or higher
