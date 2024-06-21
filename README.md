@@ -4,7 +4,7 @@ TriggeredEmailer is a console application designed to be executed by a cron job,
 
 ### Jobs
 
-mailsession: Sends an email at the end of the day to notify providers about incomplete sessions. The email includes a link to the page where providers can update session statuses and/or add notes.
+`mailsession`: Sends an email at the end of the day to notify providers about incomplete sessions. The email includes a link to the page where providers can update session statuses and/or add notes.
 
 ### Extensibility
 
