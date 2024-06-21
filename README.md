@@ -9,7 +9,7 @@ This repository can be extended for other purposes related to task scheduling fo
 ### Prerequisites
 
 - .NET8 or higher
-- SendGrid account
+- SendGrid API key and email
 - SQL Server Connection string for Triumph Web App
 
 ### Installation
