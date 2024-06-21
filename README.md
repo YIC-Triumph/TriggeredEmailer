@@ -1,8 +1,14 @@
 # TriggeredEmailer
 
-This console app is designed to be executed by a cronjob. The main idea is that an email is sent out at the end of the day, notifying the provider about incomplete sessions. The email includes a link to the page where the provider can update the session status and/or add notes.
+TriggeredEmailer is a console application designed to be executed by a cron job, containing background tasks for Triumph. Each task within this application is determined by the argument provided when running the app (e.g., TriggeredEmailer.exe mailsession).
 
-This repository can be extended for other purposes related to task scheduling for the Triumph Web App.
+### Jobs
+
+mailsession: Sends an email at the end of the day to notify providers about incomplete sessions. The email includes a link to the page where providers can update session statuses and/or add notes.
+
+### Extensibility
+
+This repository is designed to be extensible for other task scheduling purposes related to the Triumph Web App.
 
 **Note:** This project requires .NET 8 or a higher version.
 
