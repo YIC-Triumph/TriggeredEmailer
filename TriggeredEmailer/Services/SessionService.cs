@@ -32,8 +32,7 @@ namespace TriggeredEmailer.Services
             string technicalSupportEmail = "Technicalsupport@triumphaba.com";
             var incompleteScheduledSessionResult = _dbContext.sessionUserJoins
                 .FromSqlRaw("SELECT s.sessID, s.TherapistID, s.Affirmed, s.notes, s.AbsenceReason, s.starttime, s.endtime, s.SessHrs, s.sessdate, s.FirstName As StudentFirstName, s.LastName As StudentLastName, u.UserID, u.UserName, u.EmailAddress, u.FirstName As ProviderFirstName, u.LastName As ProviderLastName FROM vwSessions s INNER JOIN vwStaff u ON s.TherapistID = u.LoginID WHERE s.SessionStatus NOT IN (3, 4)")
-                .Where(s => s.notes == "")
-                .Where(s => s.notes == null)
+                .Where(s => s.notes == "" || s.notes == null)
                 .Where(s => s.sessdate < DateTime.Now)
                 .ToList();
             
@@ -43,13 +42,13 @@ namespace TriggeredEmailer.Services
 
                 var message = $@"
                     Dear {session.ProviderFirstName} {session.ProviderLastName},
-
+                    <br>
                     Your session with {session.StudentFirstName} {session.StudentLastName} from {session.starttime} to {session.endtime} has ended.
-
+                    <br>
                     <a href=""{editSessionLink}"">Click on this link to enter in and complete your session</a>.
-                    
+                    <br>
                     If you have any questions, feel free to reach out to {technicalSupportEmail} x613 for assistance.
-                    
+                    <br>
                     - Triumph Behavior Support.";
 
                 await _emailService.SendEmail(session.EmailAddress, "Incomplete Session", message);

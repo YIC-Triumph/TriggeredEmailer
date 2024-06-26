@@ -15,7 +15,7 @@ namespace TriggeredEmailer.Models
         public string? AbsenceReason { get; set; }
         public string? starttime { get; set; }
         public string? endtime { get; set; }
-        public int? SessHrs { get; set; }
+        public decimal? SessHrs { get; set; }
         public DateTime? sessdate { get; set; }
         public string? StudentFirstName { get; set; }
         public string? StudentLastName { get; set; }
