@@ -73,7 +73,12 @@ namespace TriggeredEmailer.Services
             {
                 case nameof(BillingService):
                     path = _appSettings.FileLogger.Select(n => n.Billing).FirstOrDefault().Path ?? string.Empty;
-                    filename = $"Billing_{filename}";
+                    filename = $"billing_{filename}";
+                    break;
+
+                case nameof(EmailService):
+                    path = _appSettings.FileLogger.Select(n => n.Mailsession).FirstOrDefault().Path ?? string.Empty;
+                    filename = $"incomplete_session_email_{filename}";
                     break;
             }
 
