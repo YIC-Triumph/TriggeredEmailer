@@ -30,7 +30,7 @@ class Program
                     {
                         case "mailsession":
                             var service = services.GetRequiredService<SessionService>();
-                            await service.SendEmailToProviderForIncompleteSessionAsync();
+                            await service.SendEmailToProviderToValidateSessions();
                             break;
                         case "billing":
                             var billingService = services.GetRequiredService<BillingService>();

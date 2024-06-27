@@ -56,7 +56,6 @@ namespace TriggeredEmailer.Services
 
         public async Task SendEmailToProviderToValidateSessions()
         {
-            
             var incompleteScheduledSessionResult = _dbContext.sessionUserJoins
                 .FromSqlRaw("SELECT s.sessID, s.TherapistID, s.studentID, s.Affirmed, s.notes, s.AbsenceReason, s.starttime, s.endtime, s.SessHrs, s.sessdate, s.FirstName As StudentFirstName, s.LastName As StudentLastName, u.UserID, u.UserName, u.EmailAddress, u.FirstName As ProviderFirstName, u.LastName As ProviderLastName FROM vwSessions s INNER JOIN vwStaff u ON s.TherapistID = u.LoginID WHERE s.SessionStatus NOT IN (3, 4)")
                 .Where(s => s.notes == "" || s.notes == null)
