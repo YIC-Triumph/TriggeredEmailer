@@ -10,6 +10,7 @@ namespace TriggeredEmailer.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int? sessID { get; set; }
         public int? TherapistID { get; set; }
+        public int? studentID { get; set; }
         public int? Affirmed { get; set; }
         public string? notes { get; set; }
         public string? AbsenceReason { get; set; }
