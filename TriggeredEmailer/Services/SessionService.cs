@@ -42,11 +42,15 @@ namespace TriggeredEmailer.Services
                 var message = $@"
                     Dear {session.ProviderFirstName} {session.ProviderLastName},
                     <br>
+                    <br>
                     Your session with {session.StudentFirstName} {session.StudentLastName} from {session.starttime} to {session.endtime} has ended.
                     <br>
-                    <a href=""{editSessionLink}"">Click on this link to enter in and complete your session</a>.
+                    <br>
+                    <a href=""{editSessionLink}"">Click on this link to enter in and complete your session</a>
+                    <br>
                     <br>
                     If you have any questions, feel free to reach out to {this.technicalSupportEmail} x613 for assistance.
+                    <br>
                     <br>
                     - Triumph Behavior Support.";
 
@@ -76,7 +80,7 @@ namespace TriggeredEmailer.Services
                     All sessions need to be completed or marked absent.
                     <br>
                     <br>
-                    <a href=""{editSessionLink}"">Click on this link below to go to your session list so you can validate your sessions.</a>.
+                    <a href=""{editSessionLink}"">Click on this link below to go to your session list so you can validate your sessions</a>
                     <br>
                     <br>
                     If you have any questions, feel free to reach out to {this.technicalSupportEmail} x613 for assistance.
