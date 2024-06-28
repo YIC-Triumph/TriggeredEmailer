@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TriggeredEmailer.Constants;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Models;
 
@@ -24,33 +25,38 @@ namespace TriggeredEmailer.Services
         /// </summary>
         /// <param name="fromDate">start date</param>
         /// <param name="toDate">end date</param>
+        /// <param name="roleID">role id</param>
         /// <returns></returns>
-        public async Task<ICollection<vwSession>> GetAll(DateTime fromDate, DateTime toDate)
+        public async Task<ICollection<vwSession>> GetAll(DateTime fromDate, DateTime toDate, Roles roleID)
         {
 
             var pSundayDate = new SqlParameter("@StartDate", SqlDbType.VarChar);
             var pSaturdayDate = new SqlParameter("@EndDate", SqlDbType.VarChar);
+            var roleId = new SqlParameter("@RoleID", SqlDbType.Int);
 
             pSundayDate.Value = fromDate.Date;
             pSaturdayDate.Value = toDate.Date;
 
             var vwSessions = await _dbContext.vwSessions.FromSqlRaw(
                     @"SELECT sessID, 
-                        TherapistID, 
-                        SessDate, 
-                        AffirmedDate, 
-                        SessionStatus, 
-                        studentID, 
-                        FullName
-                        FullName,
-                        PP_ID
-                    FROM vwSessions
-                    LEFT JOIN tblPayPeriod 
-                        ON SessDate between PP_StartDate and PP_EndDate    
+	                    vs.TherapistID, 
+	                    vs.SessDate, 
+	                    vs.AffirmedDate, 
+	                    vs.SessionStatus, 
+	                    vs.studentID,
+	                    vs.FullName,
+	                    pp.PP_ID,
+	                    vp.RoleID
+                    FROM vwSessions vs
+                    LEFT JOIN tblPayPeriod pp
+                        ON vs.SessDate between pp.PP_StartDate and pp.PP_EndDate
+                    left join vwProviders vp
+	                    on vs.therapistid = vp.providerid    
                     WHERE   
-                        SessDate >= CAST(@StartDate AS Datetime) AND
-                        SessDate <= CAST(@EndDate AS datetime)",
-                    [pSundayDate, pSaturdayDate])
+                        vs.SessDate >= CAST(@StartDate AS Datetime) AND
+                        vs.SessDate <= CAST(@EndDate AS datetime) AND
+                        vp.RoleID = @roleId",
+                    [pSundayDate, pSaturdayDate, roleId])
                 .OrderByDescending(d => d.Sessdate)
                 .AsNoTracking()
                 .ToListAsync();
