@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TriggeredEmailer.Constants;
 using TriggeredEmailer.Data;
 using TriggeredEmailer.Helpers;
 using TriggeredEmailer.Interfaces;
@@ -26,18 +27,22 @@ class Program
                 foreach (var task in tasks)
                 {
                     logger.LogInformation($"{task} scheduler is running...");
-                    switch (task.ToLower())
+                    switch (task)
                     {
                         case "mailsession":
                             var service = services.GetRequiredService<SessionService>();
                             await service.SendEmailToProviderToValidateSessions();
                             break;
-                        case "billing":
+                        case "billing_BT":
+                        case "billing_BCBA":
                             var billingService = services.GetRequiredService<BillingService>();
 
                             //for BT, run auto billing 48hrs(Monday)
                             //for BCBA, run auto billing 72hrs(Tuesday)
-                            await billingService.ConfigureSendBilling();
+                            Roles role = Roles.BT;
+                            if (!string.Equals(task, "billing_BT")) role = Roles.BCBA;
+
+                            await billingService.ConfigureSendBilling(role);
                             break;
                         default:
                             break;
