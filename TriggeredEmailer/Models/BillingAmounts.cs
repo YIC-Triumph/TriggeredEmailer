@@ -16,6 +16,6 @@ namespace TriggeredEmailer.Models
     public class BillingAmount
     {
         public decimal TotalHours { get; set; }
-        public decimal TotalPay { get; set; }
+        public decimal TotalPAy { get; set; }
     }
 }

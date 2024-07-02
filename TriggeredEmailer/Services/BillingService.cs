@@ -105,6 +105,7 @@ namespace TriggeredEmailer.Services
             {
                 foreach (var sess in validSessions)
                 {
+                    sb = new StringBuilder();
                     var role = providers.Where(p => p.LoginID == sess.Key).FirstOrDefault();
                     var pIds = string.Join(',', sess.Value.Select(t => t.SessID));
 
@@ -136,14 +137,17 @@ namespace TriggeredEmailer.Services
 
                     //need to split by student
                     //calculate total hours and pay and then insert into the table
-                    var dsSesStu = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}");
+                    var dsSesStu = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}").ToList();
 
                     //store billing to invoice
                     foreach (var item in dsSesStu)
-                        _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={sess.Value.Select(p => p.PP_ID)}");
+                    {
+                        int pp_id = sess.Value.Where(s => s.StudentID == item.studentID).Select(p => p.PP_ID).FirstOrDefault();
+                        await _dbContext.Database.ExecuteSqlAsync($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={pp_id}");
+                    }
 
                     var session = sess.Value.FirstOrDefault();
-                    sb.AppendLine($"Successfull billing for {role?.LastName}, {role?.FirstName} with sessions {pIds}");
+                    sb.AppendLine($"Successfull billing for {role?.LastName}, {role?.FirstName}({role?.LoginID}) with sessions {pIds}");
                     sb.AppendLine($"Billing date: {_lastSunday.ToLongDateString()} - {_lastSaturday.ToLongDateString()}");
                     sb.AppendLine($"\tStudent name: {session?.StudentFName}({session?.StudentID})");
                     await _logger.WriteLog(sb.ToString(), LogType.File, logLevel);
@@ -151,13 +155,13 @@ namespace TriggeredEmailer.Services
             }
             catch (Exception ex)
             {
-                logLevel = LogLevel.Error;
                 sb.AppendLine(ex.Message);
                 args = ex;
+
+                //log to file
+                await _logger.WriteLog(sb.ToString(), LogType.File, LogLevel.Error, args);
             }
 
-            //log to file
-            await _logger.WriteLog(sb.ToString(), LogType.File, logLevel, args);
         }
     }
 }
