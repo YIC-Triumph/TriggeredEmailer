@@ -33,6 +33,9 @@ namespace TriggeredEmailer.Services
         //reset day on Sunday
         private DateTime _sunday = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek);
 
+        private DateTime _lastSunday => _sunday.AddDays(-7);
+        private DateTime _lastSaturday => _lastSunday.AddMinutes(_daysInterval);
+
         /// <summary>
         /// invoke auto billing
         /// <param name="role"></param>
@@ -41,18 +44,16 @@ namespace TriggeredEmailer.Services
         {
             var sb = new StringBuilder();
 
-            //1 get starting date of billing last Week
-            var lastSunday = _sunday.AddDays(-7);
-            var saturdayDate = lastSunday.AddMinutes(_daysInterval);
-
             //2 get all sessions from vwsession
-            var vwSessions = await _vwSessionsService.GetAll(lastSunday, saturdayDate, role);
+            var vwSessions = await _vwSessionsService.GetAll(_lastSunday, _lastSaturday, role);
 
             //3 list of valid session per therapist
             var validSessions = new Dictionary<int, List<vwSession>>();
 
             var gsessionPerProviderGrp = vwSessions.GroupBy(t => t.TherapistID);
 
+            sb.AppendLine("Billing was not performed due to the following sessions: ");
+            sb.AppendLine($"Billing date: {_lastSunday.ToLongDateString()} - {_lastSaturday.ToLongDateString()}");
             foreach (var sessions in gsessionPerProviderGrp)
             {
                 var hasIncompleteSession = sessions.Any(session =>
@@ -62,8 +63,9 @@ namespace TriggeredEmailer.Services
                         if (sessionStatus < SessionStatus.Absent)
                         {
                             sb.AppendLine($"Session {session.SessID} is {sessionStatus.ToString()}");
-                            sb.AppendLine($"\tTherapist ID: {session.TherapistID}");
-                            sb.AppendLine($"\tStudent ID: {session.StudentID}");
+                            sb.AppendLine($"\tSession date: {session.Sessdate}");
+                            sb.AppendLine($"\tProvider name: {session.ProviderFName}({session.TherapistID})");
+                            sb.AppendLine($"\tStudent name: {session.StudentFName}({session.StudentID})");
                             return true;
                         }
 
@@ -96,6 +98,7 @@ namespace TriggeredEmailer.Services
 
             var providers = await _vwStaffService.GetAll();
 
+            sb.AppendLine("Perform Billing:");
             try
             {
                 foreach (var sess in validSessions)
@@ -137,8 +140,10 @@ namespace TriggeredEmailer.Services
                     foreach (var item in dsSesStu)
                         _dbContext.BillingAmounts.FromSql($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={sess.Value.Select(p => p.PP_ID)}");
 
-
-                    sb.AppendLine($"Successfull billing for provider {sess.Key}, with sessions {pIds}");
+                    var session = sess.Value.FirstOrDefault();
+                    sb.AppendLine($"Successfull billing for {role?.LastName}, {role?.FirstName} with sessions {pIds}");
+                    sb.AppendLine($"Billing date: {_lastSunday.ToLongDateString()} - {_lastSaturday.ToLongDateString()}");
+                    sb.AppendLine($"\tStudent name: {session?.StudentFName}({session?.StudentID})");
                     await _logger.WriteLog(sb.ToString(), LogType.File, logLevel);
                 }
             }

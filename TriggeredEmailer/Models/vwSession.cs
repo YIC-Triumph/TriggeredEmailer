@@ -21,7 +21,8 @@ namespace TriggeredEmailer.Models
         public DateTime? AffirmedDate { get; set; }
         public int? SessionStatus { get; set; }
         public int? StudentID { get; set; }
-        public string? FullName { get; set; }
+        public string? StudentFName { get; set; }
         public int PP_ID { get; set; }
+        public string? ProviderFName { get; set; }
     }
 }
