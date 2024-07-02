@@ -36,6 +36,7 @@ namespace TriggeredEmailer.Services
 
             pSundayDate.Value = fromDate.Date;
             pSaturdayDate.Value = toDate.Date;
+            roleId.Value = roleID;
 
             var vwSessions = await _dbContext.vwSessions.FromSqlRaw(
                     @"SELECT sessID, 
@@ -44,9 +45,10 @@ namespace TriggeredEmailer.Services
 	                    vs.AffirmedDate, 
 	                    vs.SessionStatus, 
 	                    vs.studentID,
-	                    vs.FullName,
+	                    vs.FullName AS StudentFName,
 	                    pp.PP_ID,
-	                    vp.RoleID
+	                    vp.RoleID,
+                        vp.FullName AS ProviderFName
                     FROM vwSessions vs
                     LEFT JOIN tblPayPeriod pp
                         ON vs.SessDate between pp.PP_StartDate and pp.PP_EndDate
