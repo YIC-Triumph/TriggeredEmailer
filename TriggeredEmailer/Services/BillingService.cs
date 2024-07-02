@@ -33,7 +33,9 @@ namespace TriggeredEmailer.Services
         //reset day on Sunday
         private DateTime _sunday = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek);
 
+        //start of billing
         private DateTime _lastSunday => _sunday.AddDays(-7);
+        //end of billing
         private DateTime _lastSaturday => _lastSunday.AddMinutes(_daysInterval);
 
         /// <summary>
