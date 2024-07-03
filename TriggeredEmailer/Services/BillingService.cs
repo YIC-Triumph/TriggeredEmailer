@@ -86,12 +86,12 @@ namespace TriggeredEmailer.Services
 
             await ExecuteBilling(validSessions);
         }
-
+            
         /// <summary>
         /// This method executes billing
         /// </summary>
         /// <param name="validSessions"></param>
-        /// <returns></returns>
+        /// <returns></returns>     
         private async Task ExecuteBilling(Dictionary<int, List<vwSession>> validSessions)
         {
             var logLevel = LogLevel.Information;
@@ -99,7 +99,7 @@ namespace TriggeredEmailer.Services
             StringBuilder sb = new StringBuilder();
 
             var providers = await _vwStaffService.GetAll();
-
+                    
             sb.AppendLine("Perform Billing:");
             try
             {
@@ -137,10 +137,10 @@ namespace TriggeredEmailer.Services
 
                     //need to split by student
                     //calculate total hours and pay and then insert into the table
-                    var dsSesStu = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}").ToList();
+                    var studentSessions = _dbContext.SessionStudents.FromSql($"exec sp_SubmitToBilling_GroupsessByStudent @strIDs={pIds}").ToList();
 
                     //store billing to invoice
-                    foreach (var item in dsSesStu)
+                    foreach (var item in studentSessions)
                     {
                         int pp_id = sess.Value.Where(s => s.StudentID == item.studentID).Select(p => p.PP_ID).FirstOrDefault();
                         await _dbContext.Database.ExecuteSqlAsync($"exec sp_SubmitToBilling @SessIds={item.strIDs}, @ProviderID={sess.Key}, @StudentID={item.studentID}, @PayPeriodID={pp_id}");
