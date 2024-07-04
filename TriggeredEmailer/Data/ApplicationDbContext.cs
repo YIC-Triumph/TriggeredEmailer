@@ -15,7 +15,7 @@ namespace TriggeredEmailer.Data
         {
             base.OnModelCreating(modelBuilder);
             var builder = modelBuilder.Entity<BillingAmount>();
-            builder.Property(p => p.TotalPay).HasColumnType("decimal(18,2)");
+            builder.Property(p => p.TotalPAy).HasColumnType("decimal(18,2)");
             builder.Property(p => p.TotalHours).HasColumnType("decimal(18,2)");
             
         }
