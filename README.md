@@ -6,6 +6,8 @@ TriggeredEmailer is a console application designed to be executed by a cron job,
 
 `mailsession`: Sends an email at the end of the day to notify providers about incomplete sessions. The email includes a link to the page where providers can update session statuses and/or add notes.
 
+`billing_BT` or `billing_BCBA`: For executing auto billing
+
 ### Extensibility
 
 This repository is designed to be extensible for other task scheduling purposes related to the Triumph Web App.
